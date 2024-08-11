@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ recipe.title }}</title>
+</head>
+<body>
+    <h1>{{ recipe.title }}</h1>
+    <h2>Zutaten für {{ new_portions if new_portions else recipe.portions }} Portionen:</h2>
+    <ul>
+        {% if scaled_ingredients %}
+            {% for ingredient, amount in scaled_ingredients.items() %}
+                <li>{{ ingredient }}: {{ amount }}g</li>
+            {% endfor %}
+        {% else %}
+            {% for ingredient in recipe.ingredients %}
+                <li>{{ ingredient.name }}: {{ ingredient.amount }}g</li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+</body>
+</html>

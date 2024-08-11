@@ -40,5 +40,43 @@ def recipe_detail(recipe_id):
     return render_template('recipe_detail.html', recipe=recipe)
 
 
+@app.route('/add_recipe', methods=['GET', 'POST'])
+def add_recipe():
+    if request.method == 'POST':
+        title = request.form['title']
+        portions = int(request.form['portions'])
+
+        new_recipe = Recipe(title=title, portions=portions)
+        db.session.add(new_recipe)
+        db.session.commit()
+
+        ingredients = request.form.getlist('ingredient_name')
+        amounts = request.form.getlist('ingredient_amount')
+
+        for name, amount in zip(ingredients, amounts):
+            ingredient = Ingredient(name=name, amount=int(amount), recipe_id=new_recipe.id)
+            db.session.add(ingredient)
+
+        db.session.commit()
+
+        return redirect(url_for('index'))
+
+    return render_template('add_recipe.html')
+
+
+@app.route('/recipe/<int:recipe_id>/calculate', methods=['POST'])
+def calculate_portions(recipe_id):
+    recipe = Recipe.query.get_or_404(recipe_id)
+    new_portions = int(request.form['portions'])
+    factor = new_portions / recipe.portions
+
+    scaled_ingredients = {}
+    for ingredient in recipe.ingredients:
+        scaled_ingredients[ingredient.name] = ingredient.amount * factor
+
+    return render_template('recipe_detail.html', recipe=recipe, scaled_ingredients=scaled_ingredients,
+                           new_portions=new_portions)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
