@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///recipes.db'
@@ -24,7 +25,6 @@ class Ingredient(db.Model):
 if not os.path.exists('instance/recipes.db'):
     with app.app_context():
         db.create_all()
-        create_default_user()
         print("Datenbank erstellt.")
 
 
